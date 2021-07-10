@@ -1,0 +1,6 @@
+#draft {
+    background-color:lemonchiffon;
+    min-height: 5em;
+    max-height: 20em;
+    overflow: scroll;
+}
