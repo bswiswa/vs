@@ -3,12 +3,13 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Editor from "./components/Editor";
 import Draft from "./components/Draft";
 import LibzEditor from "./components/LibzEditor";
-import { Container, Col, Row } from "react-bootstrap";
+import { Container, Col, Row, Button, Navbar } from "react-bootstrap";
 import { useState } from "react";
 
 function App() {
   let [libz, setLibz] = useState([]);
   let [text, setText] = useState([]);
+  let [mode, setMode] = useState("template");
 
   const addToText = (txt, type) => {
       setText([...text, { type, payload: txt }]);
@@ -66,21 +67,38 @@ function App() {
 
   return (
     <div className="App">
+      <Navbar bg="light" variant="light">
+        <Navbar.Brand href="#home">Victor-Spoilz</Navbar.Brand>
+          <Button 
+            variant={mode === "template" ? "outline-primary": "outline-success"} id="change-mode"
+            onClick={() => setMode(mode === "template" ? "contract" : "template")}
+          >
+            {mode === "template" ? "Create Contract" : "Create template"}
+          </Button>
+      </Navbar>
       <Container>
         <Row>
           <Col>
-            <LibzEditor libz={libz}/>
+            <LibzEditor 
+              libz={libz}
+              setLibz={setLibz}
+              text={text}
+              setText={setText}
+              mode={mode}/>
           </Col>
           <Col>
-            <Draft text={text}/>
+            <Draft text={text} mode={mode}/>
           </Col>
         </Row>
+        {mode === "template" ? 
         <Row>
           <Editor
             onAddParagraph={handleAddParagraph}
             onAddHeader={handleAddHeader}
           />
         </Row>
+        : null}
+        
       </Container>
       
     </div>
