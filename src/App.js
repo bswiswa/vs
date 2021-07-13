@@ -9,6 +9,8 @@ import { useState } from "react";
 function App() {
   let [libz, setLibz] = useState([]);
   let [text, setText] = useState([]);
+  let [textBackup, setTextBackup] = useState([]);
+  let [libzIndex, setlibzIndex] = useState([]);
   let [mode, setMode] = useState("template");
 
   const addToText = (txt, type) => {
@@ -16,26 +18,12 @@ function App() {
   }
 
   const getLibz = (txt) => {
-    let arr = txt.split(/({{|}})/);
-    console.log(arr);
-    let possibleMatch = false, libzSet = new Set();
-    for(let i=0; i < arr.length; i++){
-      let str = arr[i].trim();
-      if (str === "{{"){
-        possibleMatch = true;
-        continue;
-      }
-      else if(possibleMatch && str !== "" && str !== "}}") // better variable format detection next time
-      {
-        libzSet.add(str);
-      }
-      else{
-        possibleMatch = false;
-      }
-    }
+    let allLibz = txt.match(/{{[^({})]*}}/g);
+    let libzSet = new Set(allLibz);
     let result = [];
     for (txt of libzSet){
-      result.push(txt);
+      // get val from {{val}}
+      result.push(txt.substring(2,txt.length - 2));
     }
     console.log(result);
     return result;
@@ -71,7 +59,29 @@ function App() {
         <Navbar.Brand href="#home">Victor-Spoilz</Navbar.Brand>
           <Button 
             variant={mode === "template" ? "outline-primary": "outline-success"} id="change-mode"
-            onClick={() => setMode(mode === "template" ? "contract" : "template")}
+            onClick={() => {
+              if(mode === "template") {
+                // backup the text
+                setTextBackup(text);
+                // create integer index of libz
+                var libzInText = [];
+                text.forEach(({payload}) => { 
+                  var matches = payload.match(/{{[^({})]*}}/g);
+                  if (matches)
+                    libzInText = [...libzInText, ...matches]; 
+                });
+                var indices = libzInText.map(lib => {
+                  var name = lib.substring(2, lib.length - 2);
+                  return libz.indexOf(name);
+                });
+                setlibzIndex(indices);
+                setMode("contract");
+              }
+              else {
+                setText(textBackup);
+                setMode("template");
+              } 
+            }}
           >
             {mode === "template" ? "Create Contract" : "Create template"}
           </Button>
@@ -82,9 +92,12 @@ function App() {
             <LibzEditor 
               libz={libz}
               setLibz={setLibz}
-              text={text}
+              libzIndex={libzIndex}
+              mode={mode}
+              text={mode === "template" ? text : textBackup}
+              textBackup={textBackup}
               setText={setText}
-              mode={mode}/>
+              />
           </Col>
           <Col>
             <Draft text={text} mode={mode}/>
