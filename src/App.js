@@ -11,6 +11,7 @@ function App() {
   let [text, setText] = useState([]);
   let [textBackup, setTextBackup] = useState([]);
   let [libzIndex, setlibzIndex] = useState([]);
+  let [libzValuesBackup, setLibzValuesBackup] = useState([]);
   let [mode, setMode] = useState("template");
 
   const addToText = (txt, type) => {
@@ -57,55 +58,91 @@ function App() {
       addToText(txt, "page break");
   }
 
+  const convert = (str, newstr, previous) => {
+    // return an evaluated template string
+    const replacer = (match, p1, p2, p3) => {
+        var replacement =  p2 === previous ?  newstr : p2;
+        return [p1, replacement, p3].join("");
+    }
+    var regex = new RegExp(`([^(${previous})]*)(${previous})([^(${previous})]*)`, "g");
+    str = str.replace(regex, replacer);
+    return str;
+  }
+
   return (
     <div className="App">
       <Navbar bg="light" variant="light">
-        <Navbar.Brand href="#home">Victor-Spoilz</Navbar.Brand>
+        <Navbar.Brand href="#home" 
+          className={mode === "contract" ? "text-primary" : "text-success"}
+        >
+            Victor-Spoilz [{mode === "contract" ? "Contract" : "Template"}]
+        </Navbar.Brand>
+        <Navbar.Collapse className="justify-content-end">
           <Button 
-            variant={mode === "template" ? "outline-primary": "outline-success"} id="change-mode"
-            onClick={() => {
-              if(mode === "template") {
-                // backup the text
-                setTextBackup(text);
-                // create integer index of libz
-                var libzInText = [];
-                text.forEach(({payload}) => { 
-                  var matches = payload.match(/{{[^({})]*}}/g);
-                  if (matches)
-                    libzInText = [...libzInText, ...matches]; 
-                });
-                var indices = libzInText.map(lib => {
-                  var name = lib.substring(2, lib.length - 2);
-                  return libz.indexOf(name);
-                });
-                setlibzIndex(indices);
-                setMode("contract");
-              }
-              else {
-                setText(textBackup);
-                setMode("template");
-              } 
-            }}
-          >
-            {mode === "template" ? "Create Contract" : "Create template"}
-          </Button>
+              variant={mode === "template" ? "outline-primary": "outline-success"} id="change-mode"
+              onClick={() => {
+                if(mode === "template") {
+                  // backup the text
+                  setTextBackup(text);
+                  // create integer index of libz
+                  var libzInText = [];
+                  text.forEach(({payload}) => { 
+                    var matches = payload.match(/{{[^({})]*}}/g);
+                    if (matches)
+                      libzInText = [...libzInText, ...matches]; 
+                  });
+                  var indices = libzInText.map(lib => {
+                    var name = lib.substring(2, lib.length - 2);
+                    return libz.indexOf(name);
+                  });
+                  setlibzIndex(indices);
+                  setMode("contract");
+
+                  // substitute in libz values
+                  let txt = [...text];
+                  var libzCounter = 0;
+                  txt = txt.map(({type, payload}) => {
+                      let libzArray = payload.match(/{{[^({})]*}}/g);
+                      if(libzArray){
+                          libzArray.forEach(current_libz => {
+                              let val = libzValuesBackup[libzIndex[libzCounter]];
+                              payload = val === "" || val === undefined ? payload : convert(payload, val, current_libz);
+                              libzCounter++;
+                          });
+                      }
+                      return { type, payload };
+                  });
+                  setText(txt);
+                }
+                else {
+                  setText(textBackup);
+                  setMode("template");
+                } 
+              }}
+            >
+              {mode === "template" ? "Switch to Contract Mode" : "Switch to Template Mode"}
+            </Button>
+        </Navbar.Collapse>
+
       </Navbar>
       <Container>
         <div className="mt-1">
           <Row>
             <Col>
+              <Draft text={text} mode={mode}/>
+            </Col>
+            <Col>
               <LibzEditor 
                 libz={libz}
                 setLibz={setLibz}
                 libzIndex={libzIndex}
+                libzValuesBackup={libzValuesBackup}
+                setLibzValuesBackup={setLibzValuesBackup}
                 mode={mode}
                 text={mode === "template" ? text : textBackup}
                 textBackup={textBackup}
                 setText={setText}
                 />
-            </Col>
-            <Col>
-              <Draft text={text} mode={mode}/>
             </Col>
           </Row>
           {mode === "template" ? 

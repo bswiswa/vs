@@ -2,8 +2,8 @@ import "../styles/LibzEditor.css";
 import {Row, Col, Form, InputGroup} from 'react-bootstrap';
 import {useState} from "react";
 
-const LibzEditor = ({libz, setLibz, libzIndex, mode, text, setText, textBackup }) => {
-    let [libzValues, setLibzValues] = useState(libz.map(el => ""));
+const LibzEditor = ({libz, setLibz, libzIndex, libzValuesBackup, setLibzValuesBackup, mode, text, setText, textBackup }) => {
+    let [libzValues, setLibzValues] = useState(libz.map((el, idx) => libzValuesBackup[idx] ? libzValuesBackup[idx] : ""));
     const convert = (str, newstr, previous) => {
         // return an evaluated template string
         const replacer = (match, p1, p2, p3) => {
@@ -35,6 +35,7 @@ const LibzEditor = ({libz, setLibz, libzIndex, mode, text, setText, textBackup }
         let tmpLibzValues = [...libzValues];
         tmpLibzValues[libz_index] = new_replacement;
         setLibzValues(tmpLibzValues);
+        setLibzValuesBackup(tmpLibzValues);
         let txt = [...textBackup];
         var libzCounter = 0;
         txt = txt.map(({type, payload}) => {
@@ -80,8 +81,9 @@ const LibzEditor = ({libz, setLibz, libzIndex, mode, text, setText, textBackup }
                     <InputGroup.Prepend>
                     <InputGroup.Text>{libzName}</InputGroup.Text>
                     </InputGroup.Prepend>
-                    <Form.Control placeholder={libzName + " value"}
+                    <Form.Control type="text" placeholder={libzName + " value"}
                         libz-index={index}
+                        value={libzValues[index] ? libzValues[index] : ""}
                         onChange={handleLibzValueChange}
                     />
                 </InputGroup>
@@ -90,7 +92,7 @@ const LibzEditor = ({libz, setLibz, libzIndex, mode, text, setText, textBackup }
 
     return (
         <div id="libz-editor">
-            <h5>Libz List</h5>
+            {libz.length > 0 ? <h5>Libz Editor</h5> : null}
             <ul id="libz-list">
                 {libzElements}
             </ul>

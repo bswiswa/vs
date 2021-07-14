@@ -1,4 +1,13 @@
 #libz-editor {
-    max-height: 20em;
+    border: dotted 1px black;
+    height: 20em;
     overflow: scroll;
+}
+
+#libz-editor > h5 {
+    margin-left: 5px;
+}
+#libz-list {
+    padding-inline-start: 0;
+    margin: 5px;
 }

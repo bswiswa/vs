@@ -7,14 +7,7 @@ const Editor = ({ onAddParagraph, onAddHeader, onAddPageBreak }) => {
     console.log(editorText);
     return (
         <Container>
-            <Row className="justify-content-center mt-5" id="editorActions">
-                <Button 
-                    variant="outline-primary" className="mr-1" size="sm"
-                    onClick={() => { 
-                        onAddParagraph(editorText);
-                        setEditorText("");
-                    }}
-                    >+Paragraph</Button>{' '}
+            <Row className="justify-content-left mt-5 mb-1" id="editorActions">
                 <Button 
                     variant="outline-secondary" size="sm" className="mr-1"
                     onClick={() => { 
@@ -23,17 +16,19 @@ const Editor = ({ onAddParagraph, onAddHeader, onAddPageBreak }) => {
                     }}
                 >+Header</Button>{' '}
                 <Button 
-                    variant="outline-success" size="sm"
+                    variant="outline-primary" className="mr-1" size="sm"
                     onClick={() => { 
-                        onAddPageBreak(editorText);
+                        onAddParagraph(editorText);
                         setEditorText("");
                     }}
-                >+Page Break</Button>
+                    >+Paragraph</Button>{' '}
             </Row>
             <Row className="justify-content-center">
-                <Form.Control id="editorText" as="textarea" rows={3} 
-                onChange={(e) => setEditorText(e.target.value)}
-                value={editorText}
+                <Form.Control id="editorText" as="textarea" rows={3}
+                    placeholder="Begin creating your template here" 
+                    onChange={(e) => setEditorText(e.target.value)}
+                    value={editorText}
+                    autoFocus
                 />
             </Row>
         </Container>
