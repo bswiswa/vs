@@ -53,6 +53,10 @@ function App() {
     }
   }
 
+  const handleAddPageBreak = (txt) => {
+      addToText(txt, "page break");
+  }
+
   return (
     <div className="App">
       <Navbar bg="light" variant="light">
@@ -87,31 +91,33 @@ function App() {
           </Button>
       </Navbar>
       <Container>
-        <Row>
-          <Col>
-            <LibzEditor 
-              libz={libz}
-              setLibz={setLibz}
-              libzIndex={libzIndex}
-              mode={mode}
-              text={mode === "template" ? text : textBackup}
-              textBackup={textBackup}
-              setText={setText}
-              />
-          </Col>
-          <Col>
-            <Draft text={text} mode={mode}/>
-          </Col>
-        </Row>
-        {mode === "template" ? 
-        <Row>
-          <Editor
-            onAddParagraph={handleAddParagraph}
-            onAddHeader={handleAddHeader}
-          />
-        </Row>
+        <div className="mt-1">
+          <Row>
+            <Col>
+              <LibzEditor 
+                libz={libz}
+                setLibz={setLibz}
+                libzIndex={libzIndex}
+                mode={mode}
+                text={mode === "template" ? text : textBackup}
+                textBackup={textBackup}
+                setText={setText}
+                />
+            </Col>
+            <Col>
+              <Draft text={text} mode={mode}/>
+            </Col>
+          </Row>
+          {mode === "template" ? 
+          <Row>
+            <Editor
+              onAddParagraph={handleAddParagraph}
+              onAddHeader={handleAddHeader}
+              onAddPageBreak={handleAddPageBreak}
+            />
+          </Row>
         : null}
-        
+        </div>
       </Container>
       
     </div>

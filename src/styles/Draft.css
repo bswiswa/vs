@@ -1,6 +1,12 @@
 #draft {
-    background-color:lemonchiffon;
+    border: dotted 1px black;
     min-height: 5em;
     max-height: 20em;
     overflow: scroll;
 }
+
+@media print {
+    .new-page {
+      break-inside: avoid;
+    }
+  }
