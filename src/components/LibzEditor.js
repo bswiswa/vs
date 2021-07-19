@@ -1,9 +1,7 @@
 import "../styles/LibzEditor.css";
 import {Row, Col, Form, InputGroup} from 'react-bootstrap';
-import {useState} from "react";
 
-const LibzEditor = ({libz, setLibz, libzIndex, libzValuesBackup, setLibzValuesBackup, mode, text, setText, textBackup }) => {
-    let [libzValues, setLibzValues] = useState(libz.map((el, idx) => libzValuesBackup[idx] ? libzValuesBackup[idx] : ""));
+const LibzEditor = ({libz, setLibz, libzIndex, libzValues, setLibzValues, mode, text, setText, textBackup }) => {
     const convert = (str, newstr, previous) => {
         // return an evaluated template string
         const replacer = (match, p1, p2, p3) => {
@@ -34,8 +32,8 @@ const LibzEditor = ({libz, setLibz, libzIndex, libzValuesBackup, setLibzValuesBa
         let libz_index = parseInt(e.target.getAttribute("libz-index"));
         let tmpLibzValues = [...libzValues];
         tmpLibzValues[libz_index] = new_replacement;
+        //setLibzValues(tmpLibzValues);
         setLibzValues(tmpLibzValues);
-        setLibzValuesBackup(tmpLibzValues);
         let txt = [...textBackup];
         var libzCounter = 0;
         txt = txt.map(({type, payload}) => {
@@ -53,18 +51,6 @@ const LibzEditor = ({libz, setLibz, libzIndex, libzValuesBackup, setLibzValuesBa
         });
         setText(txt);
     }
-
-    // const handleLibzValueChangeBulk = (e) => {
-    //     document.querySelectorAll();
-    //     let new_replacement = e.target.value;
-    //     let libz_index = parseInt(e.target.getAttribute("libz-index"));
-    //     let current_libz = "{{" + libz[libz_index] + "}}";
-    //     let txt = [...text];
-    //     txt = txt.map(({type, payload}) => {
-    //         return { type, payload: convert(payload, new_replacement, current_libz) }
-    //     });
-    //     setText(txt);
-    // }
 
     let libzElements = libz.map((libzName, index) => {
             return mode === "template" ? 

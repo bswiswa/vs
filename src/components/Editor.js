@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Container, Row, Form, Button } from "react-bootstrap";
 import '../styles/Editor.css';
 
-const Editor = ({ onAddParagraph, onAddHeader, onAddPageBreak }) => {
+const Editor = ({ onAddParagraph, onAddHeader }) => {
     const [editorText, setEditorText] = useState("");
     console.log(editorText);
     return (
@@ -26,7 +26,20 @@ const Editor = ({ onAddParagraph, onAddHeader, onAddPageBreak }) => {
             <Row className="justify-content-center">
                 <Form.Control id="editorText" as="textarea" rows={3}
                     placeholder="Begin creating your template here" 
-                    onChange={(e) => setEditorText(e.target.value)}
+                    onChange={(e) => { 
+                        var val = e.target.value;
+                        if(val.length > 0)
+                        {
+                            if(val.charAt(val.length-1) === '\n'){
+                                val = val.substring(0,val.length-1);
+                                onAddParagraph(val);
+                                setEditorText("");
+                            }
+                            else
+                                setEditorText(val);
+                        }
+                        
+                    }}
                     value={editorText}
                     autoFocus
                 />

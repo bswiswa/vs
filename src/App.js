@@ -11,7 +11,7 @@ function App() {
   let [text, setText] = useState([]);
   let [textBackup, setTextBackup] = useState([]);
   let [libzIndex, setlibzIndex] = useState([]);
-  let [libzValuesBackup, setLibzValuesBackup] = useState([]);
+  let [libzValues, setLibzValues] = useState([]);
   let [mode, setMode] = useState("template");
 
   const addToText = (txt, type) => {
@@ -105,7 +105,7 @@ function App() {
                       let libzArray = payload.match(/{{[^({})]*}}/g);
                       if(libzArray){
                           libzArray.forEach(current_libz => {
-                              let val = libzValuesBackup[libzIndex[libzCounter]];
+                              let val = libzValues[libzIndex[libzCounter]];
                               payload = val === "" || val === undefined ? payload : convert(payload, val, current_libz);
                               libzCounter++;
                           });
@@ -136,8 +136,8 @@ function App() {
                 libz={libz}
                 setLibz={setLibz}
                 libzIndex={libzIndex}
-                libzValuesBackup={libzValuesBackup}
-                setLibzValuesBackup={setLibzValuesBackup}
+                libzValues={libzValues}
+                setLibzValues={setLibzValues}
                 mode={mode}
                 text={mode === "template" ? text : textBackup}
                 textBackup={textBackup}
