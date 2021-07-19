@@ -5,18 +5,15 @@ import Draft from "./components/Draft";
 import LibzEditor from "./components/LibzEditor";
 import { Container, Col, Row, Button, Navbar } from "react-bootstrap";
 import { useState } from "react";
+import convert from "./util/convert";
 
 function App() {
   let [libz, setLibz] = useState([]);
-  let [text, setText] = useState([]);
-  let [textBackup, setTextBackup] = useState([]);
+  let [text, setText] = useState("");
+  let [textBackup, setTextBackup] = useState("");
   let [libzIndex, setlibzIndex] = useState([]);
   let [libzValues, setLibzValues] = useState([]);
   let [mode, setMode] = useState("template");
-
-  const addToText = (txt, type) => {
-      setText([...text, { type, payload: txt }]);
-  }
 
   const getLibz = (txt) => {
     let allLibz = txt.match(/{{[^({})]*}}/g);
@@ -30,44 +27,12 @@ function App() {
     return result;
   }
 
-  const updateLibz = (txt) => {
-    let uniqueLibz = new Set([...libz, ...getLibz(txt)]);
-    console.log(uniqueLibz);
-    let result = [];
-    for (let node of uniqueLibz)
-      result.push(node);
-    console.log(result);
-    setLibz(result);
-  };
-
-  const handleAddParagraph = (txt) => {
+  const handleTextUpdate = (txt) => {
     if (txt.length > 0){
-      addToText(txt, "paragraph");
-      updateLibz(txt);
+      setText(txt);
+      setLibz(getLibz(txt));
     }
   };
-
-  const handleAddHeader = (txt) => {
-    if (txt.length > 0){
-      addToText(txt, "header");
-      updateLibz(txt);
-    }
-  }
-
-  const handleAddPageBreak = (txt) => {
-      addToText(txt, "page break");
-  }
-
-  const convert = (str, newstr, previous) => {
-    // return an evaluated template string
-    const replacer = (match, p1, p2, p3) => {
-        var replacement =  p2 === previous ?  newstr : p2;
-        return [p1, replacement, p3].join("");
-    }
-    var regex = new RegExp(`([^(${previous})]*)(${previous})([^(${previous})]*)`, "g");
-    str = str.replace(regex, replacer);
-    return str;
-  }
 
   return (
     <div className="App">
@@ -86,11 +51,9 @@ function App() {
                   setTextBackup(text);
                   // create integer index of libz
                   var libzInText = [];
-                  text.forEach(({payload}) => { 
-                    var matches = payload.match(/{{[^({})]*}}/g);
+                    var matches = text.match(/{{[^({})]*}}/g);
                     if (matches)
                       libzInText = [...libzInText, ...matches]; 
-                  });
                   var indices = libzInText.map(lib => {
                     var name = lib.substring(2, lib.length - 2);
                     return libz.indexOf(name);
@@ -99,19 +62,16 @@ function App() {
                   setMode("contract");
 
                   // substitute in libz values
-                  let txt = [...text];
+                  let txt = (' ' + text).slice(1); // https://stackoverflow.com/questions/31712808/how-to-force-javascript-to-deep-copy-a-string
                   var libzCounter = 0;
-                  txt = txt.map(({type, payload}) => {
-                      let libzArray = payload.match(/{{[^({})]*}}/g);
-                      if(libzArray){
-                          libzArray.forEach(current_libz => {
-                              let val = libzValues[libzIndex[libzCounter]];
-                              payload = val === "" || val === undefined ? payload : convert(payload, val, current_libz);
-                              libzCounter++;
-                          });
-                      }
-                      return { type, payload };
-                  });
+                  let libzArray = txt.match(/{{[^({})]*}}/g);
+                  if(libzArray){
+                      libzArray.forEach(current_libz => {
+                          let val = libzValues[libzIndex[libzCounter]];
+                          txt = val === "" || val === undefined ? txt : convert(txt, val, current_libz);
+                          libzCounter++;
+                      });
+                  }
                   setText(txt);
                 }
                 else {
@@ -129,7 +89,10 @@ function App() {
         <div className="mt-1">
           <Row>
             <Col>
-              <Draft text={text} mode={mode}/>
+              <Draft 
+                text={text} 
+                mode={mode}
+              />
             </Col>
             <Col>
               <LibzEditor 
@@ -148,9 +111,9 @@ function App() {
           {mode === "template" ? 
           <Row>
             <Editor
-              onAddParagraph={handleAddParagraph}
-              onAddHeader={handleAddHeader}
-              onAddPageBreak={handleAddPageBreak}
+              handleTextUpdate={handleTextUpdate}
+              setText={setText}
+              text={text}
             />
           </Row>
         : null}

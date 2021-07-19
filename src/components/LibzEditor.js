@@ -1,26 +1,15 @@
 import "../styles/LibzEditor.css";
 import {Row, Col, Form, InputGroup} from 'react-bootstrap';
+import convert from "../util/convert";
 
 const LibzEditor = ({libz, setLibz, libzIndex, libzValues, setLibzValues, mode, text, setText, textBackup }) => {
-    const convert = (str, newstr, previous) => {
-        // return an evaluated template string
-        const replacer = (match, p1, p2, p3) => {
-            var replacement =  p2 === previous ?  newstr : p2;
-            return [p1, replacement, p3].join("");
-        }
-        var regex = new RegExp(`([^(${previous})]*)(${previous})([^(${previous})]*)`, "g");
-        str = str.replace(regex, replacer);
-        return str;
-    };
 
     const handleLibzNameChange = (e) => {
         let newlibz = e.target.value;
         let previous_name_index = parseInt(e.target.getAttribute("libz-index"));
         let oldlibz = "{{" + libz[previous_name_index] + "}}";
-        let txt = [...text];
-        txt = txt.map(({type, payload}) => {
-            return { type, payload: convert(payload, "{{" + newlibz + "}}", oldlibz) }
-        });
+        let txt = (' ' + text).slice(1);
+        txt = convert(txt, "{{" + newlibz + "}}", oldlibz);
         setText(txt);
         let libzArr = libz;
         libzArr[previous_name_index] = newlibz;
@@ -34,21 +23,17 @@ const LibzEditor = ({libz, setLibz, libzIndex, libzValues, setLibzValues, mode, 
         tmpLibzValues[libz_index] = new_replacement;
         //setLibzValues(tmpLibzValues);
         setLibzValues(tmpLibzValues);
-        let txt = [...textBackup];
+        let txt = (' ' + textBackup).slice(1); // create a copy of string
         var libzCounter = 0;
-        txt = txt.map(({type, payload}) => {
-            let libzArray = payload.match(/{{[^({})]*}}/g);
-            console.log(libzArray);
-            if(libzArray){
-                libzArray.forEach(current_libz => {
-                    let val = tmpLibzValues[libzIndex[libzCounter]];
-                    payload = val === "" || val === undefined ? payload : convert(payload, val, current_libz);
-                    libzCounter++;
-                });
-            }
-            console.log({type, payload});
-            return { type, payload };
-        });
+        let libzArray = txt.match(/{{[^({})]*}}/g);
+        console.log(libzArray);
+        if(libzArray){
+            libzArray.forEach(current_libz => {
+                let val = tmpLibzValues[libzIndex[libzCounter]];
+                 txt = val === "" || val === undefined ? txt : convert(txt, val, current_libz);
+                libzCounter++;
+            });
+        }
         setText(txt);
     }
 
