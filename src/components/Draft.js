@@ -4,7 +4,7 @@ import html2pdf from "html-to-pdf-js";
 import MarkdownView from "react-showdown";
 import convert from "../util/convert";
 
-const Draft = ({ text, mode }) => {
+const Draft = ({ text, mode, handleSave }) => {
     const highlightLibz = (txt) => {
         let libzArray = txt.match(/{{[^({})]*}}/g);
                   if(libzArray){
@@ -62,7 +62,13 @@ const Draft = ({ text, mode }) => {
                         onClick={downloadPdf}
                     >
                         Download
-                    </Button> : null
+                    </Button> : 
+                    text.length > 0 ? <Button variant="outline-success"
+                    className="mt-1"
+                    onClick={handleSave}
+                >
+                    Save Template
+                </Button> : null
                 }
             </Row>
             
