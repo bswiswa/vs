@@ -51,15 +51,15 @@ const LibzEditor = ({libz, setLibz, mode, text, setText, textBackup }) => {
              else
                 libzElements.push(
                     <InputGroup className="mb-3" key={index++}>
-                    <InputGroup.Prepend>
-                    <InputGroup.Text>{key}</InputGroup.Text>
-                    </InputGroup.Prepend>
-                    <Form.Control type="text" placeholder={key + " value"}
-                        libz-key={key}
-                        value={!val ? "" : val}
-                        onChange={handleLibzValueChange}
-                    />
-                </InputGroup>
+                        <InputGroup.Prepend>
+                            <InputGroup.Text>{key}</InputGroup.Text>
+                        </InputGroup.Prepend>
+                        <Form.Control type="text" placeholder={key + " value"}
+                            libz-key={key}
+                            value={!val ? "" : val}
+                            onChange={handleLibzValueChange}
+                        />
+                    </InputGroup>
                 );
         }
 

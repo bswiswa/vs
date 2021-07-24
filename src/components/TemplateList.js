@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 const Template = ({ template, deleteTemplate }) => {
     return (
         <tr>
-        <td>{template.name}</td>
+        <td>{template.doc_name}</td>
         <td>
           <Link to={"/template/" + template._id}>Edit</Link> {' | '}
           <a
@@ -46,7 +46,7 @@ export default class TemplateList extends Component
     deleteTemplate(id) {
         axios.delete("http://localhost:3001/template/" + id).then((response) => {
             console.log("deleted", response.data);
-            
+
             this.setState({
               templates: this.state.records.filter((el) => el._id !== id)
           });

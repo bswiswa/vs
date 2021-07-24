@@ -18,13 +18,14 @@ class Edit extends Component {
     this.setTextBackup = this.setTextBackup.bind(this);
     this.setMode = this.setMode.bind(this);
     this.handleSave = this.handleSave.bind(this);
+    this.handleDocNameChange = this.handleDocNameChange.bind(this);
 
     this.state = {
       libz: new Map(),
       text: "",
       textBackup: "",
       mode: "template",
-      name: ""
+      doc_name: ""
     }
   };
   
@@ -32,6 +33,7 @@ class Edit extends Component {
   setText(text) { this.setState({ text })}
   setTextBackup(textBackup) { this.setState({ textBackup })}
   setMode(mode) { this.setState({ mode })}
+  setDocName(doc_name) { this.setState({ doc_name})}
 
   // This will get the template based on the id from the database.
   componentDidMount() {
@@ -45,7 +47,7 @@ class Edit extends Component {
       .get("http://localhost:3001/template/" + this.props.match.params.id)
       .then((response) => {
         this.setState({
-          name: response.data.name,
+          doc_name: response.data.name,
           text: response.data.text,
         });
         this.setLibz(this.getLibz(response.data.text));
@@ -75,17 +77,20 @@ class Edit extends Component {
       this.setText(txt);
   };
 
+  handleDocNameChange(e){
+    this.setDocName(e.target.value);
+  }
+
   handleSave(e) {
     e.preventDefault();
-    var name;
+    var { text, doc_name } = this.state;
     if(this.props.history.location.pathname.indexOf("/template/") >= 0)
     {
       // we are in the edit context so need to update record
-      name = prompt("Edit template name:", this.state.name);
-      if(name != null)
+      if(doc_name)
       {
           axios
-          .post("http://localhost:3001/template/update/" + this.props.match.params.id, {name, text: this.state.text})
+          .post("http://localhost:3001/template/update/" + this.props.match.params.id, {doc_name, text})
           .then((res) =>  { alert("template saved"); console.log(res.data); });
   
           this.props.history.push("/");
@@ -93,11 +98,10 @@ class Edit extends Component {
     }
     else{
       // we are in the create context so need to add a new record when post is sent to /template/add
-      name = prompt("Enter a template name:");
-        if(name != null)
+        if(doc_name)
         {
             axios
-            .post("http://localhost:3001/template/add", {name, text: this.state.text})
+            .post("http://localhost:3001/template/add", {doc_name, text})
             .then((res) =>  { alert("template saved"); console.log(res.data); });
         }
       } 
@@ -105,22 +109,21 @@ class Edit extends Component {
   }
 
   render () {
+    let  { mode, text, libz, textBackup, doc_name } = this.state;
       return (
       <Container>
           <Navbar>
-          {this.state.name ? <h6>Template: {this.state.name}</h6> : null}
-          <Navbar.Collapse className="justify-content-end">
-            <Button 
-                variant={this.state.mode === "template" ? "outline-primary": "outline-success"} id="change-mode"
+            <Navbar.Collapse className="justify-content-end">
+              <Button 
+                variant={mode === "template" ? "outline-primary": "outline-success"} id="change-mode"
                 onClick={() => {
-                  if(this.state.mode === "template") {
+                  if(mode === "template") {
                     // backup the text
-                    this.setTextBackup(this.state.text);
+                    this.setTextBackup(text);
                     this.setMode("contract");
 
                     // substitute in libz values
-                    let txt = (' ' + this.state.text).slice(1); // https://stackoverflow.com/questions/31712808/how-to-force-javascript-to-deep-copy-a-string
-                    var libz = this.state.libz;
+                    let txt = (' ' + text).slice(1); // https://stackoverflow.com/questions/31712808/how-to-force-javascript-to-deep-copy-a-string
                     if(libz.size > 0){
                         for (const [key, val] of libz) {
                             txt = !val ? txt : convert(txt, val, `{{${key}}}`);
@@ -130,12 +133,12 @@ class Edit extends Component {
                   }
                   else {
                     // return to the text that we previously had before substituting in the libz
-                    this.setText(this.state.textBackup);
+                    this.setText(textBackup);
                     this.setMode("template");
                   } 
                 }}
               >
-                {this.state.mode === "template" ? "Switch to Contract Mode" : "Switch to Template Mode"}
+                {mode === "template" ? "Switch to Contract Mode" : "Switch to Template Mode"}
               </Button>
         </Navbar.Collapse>
       </Navbar>
@@ -143,28 +146,30 @@ class Edit extends Component {
           <Row>
             <Col>
               <Draft 
-                text={this.state.text} 
-                mode={this.state.mode}
+                text={text} 
+                mode={mode}
+                doc_name={doc_name}
                 handleSave={this.handleSave}
+                handleDocNameChange={this.handleDocNameChange}
               />
             </Col>
             <Col>
               <LibzEditor 
-                libz={this.state.libz}
+                libz={libz}
                 setLibz={this.setLibz}
-                mode={this.state.mode}
-                text={this.state.mode === "template" ? this.state.text : this.state.textBackup}
-                textBackup={this.state.textBackup}
+                mode={mode}
+                text={mode === "template" ? this.state.text : this.state.textBackup}
+                textBackup={textBackup}
                 setText={this.setText}
                 />
             </Col>
           </Row>
-          {this.state.mode === "template" ? 
+          {mode === "template" ? 
           <Row>
             <Editor
               handleTextUpdate={this.handleTextUpdate}
               setText={this.setText}
-              text={this.state.text}
+              text={text}
             />
           </Row>
         : null}

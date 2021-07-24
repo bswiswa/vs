@@ -1,11 +1,11 @@
 import "../styles/Draft.css";
-import {Button, Row} from "react-bootstrap";
+import {Button, Row, Form, InputGroup} from "react-bootstrap";
 import html2pdf from "html-to-pdf-js";
 import MarkdownView from "react-showdown";
 import convert from "../util/convert";
 import colorPicker from "../util/colorPicker";
 
-const Draft = ({ text, mode, handleSave }) => {
+const Draft = ({ text, mode, handleSave, doc_name, handleDocNameChange }) => {
     const highlightLibz = (txt) => {
         let libzArray = txt.match(/{{[^({})]*}}/g);
         if(libzArray){
@@ -52,8 +52,18 @@ const Draft = ({ text, mode, handleSave }) => {
 
     return (
         <div>
+            <div>
+                <InputGroup className="mx-0 my-0 px-0 py-0">
+                <InputGroup.Prepend>
+                    <InputGroup.Text>{mode === "template" ? "Template" : "Contract"}{' '}Name</InputGroup.Text>
+                </InputGroup.Prepend>
+                <Form.Control type="text" 
+                    placeholder={mode === "template" ? "Template Name" : "Contract Name"}
+                    value={!doc_name ? "" : doc_name}
+                    onChange={handleDocNameChange}
+                />
+              </InputGroup>
             <div id="draft">
-                <div>
                     {draftElements}
                 </div>
             </div>

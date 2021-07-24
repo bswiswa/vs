@@ -25,7 +25,7 @@ templateRoutes.route("/").get(function(req, res){
 // create a new template
 templateRoutes.route("/template/add").post(function(req, res){
     let db_connect = dbo.getDb("vs");
-    let doc = { name: req.body.name, text: req.body.text };
+    let doc = { doc_name: req.body.doc_name, text: req.body.text };
     db_connect.collection("templates").insertOne(doc, function(err, result){
         if(err) throw err;
         res.json(result);
@@ -36,7 +36,7 @@ templateRoutes.route("/template/add").post(function(req, res){
 templateRoutes.route("/template/update/:id").post(function(req, res){
     let db_connect = dbo.getDb("vs");
     let q = { _id: new ObjectId(req.params.id) };
-    let newvalues = { $set: { name: req.body.name, text: req.body.text }, };
+    let newvalues = { $set: { doc_name: req.body.doc_name, text: req.body.text }, };
     db_connect
         .collection("templates")
         .updateOne(q, newvalues, function(err, result){
