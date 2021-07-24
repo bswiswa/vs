@@ -2,64 +2,66 @@ import "../styles/LibzEditor.css";
 import {Row, Col, Form, InputGroup} from 'react-bootstrap';
 import convert from "../util/convert";
 
-const LibzEditor = ({libz, setLibz, libzIndex, libzValues, setLibzValues, mode, text, setText, textBackup }) => {
+const LibzEditor = ({libz, setLibz, mode, text, setText, textBackup }) => {
 
     const handleLibzNameChange = (e) => {
-        let newlibz = e.target.value;
-        let previous_name_index = parseInt(e.target.getAttribute("libz-index"));
-        let oldlibz = "{{" + libz[previous_name_index] + "}}";
+        let new_name = !e.target.value ? "" : e.target.value;
+        let previous_name = !e.target.getAttribute("libz-key") ? "" : e.target.getAttribute("libz-key");
         let txt = (' ' + text).slice(1);
-        txt = convert(txt, "{{" + newlibz + "}}", oldlibz);
+        txt = convert(txt, `{{${new_name}}}`, `{{${previous_name}}}`);
         setText(txt);
-        let libzArr = libz;
-        libzArr[previous_name_index] = newlibz;
-        setLibz(libzArr);
+        const new_libz = new Map(libz);
+        // NaN is allowed in js Map
+        let new_key = !new_name ? NaN : new_name;
+        let old_key = !previous_name ? NaN : previous_name;
+        new_libz.set(new_key, new_libz.get(old_key));
+        new_libz.delete(old_key);
+        setLibz(new_libz);
     };
 
     const handleLibzValueChange = (e) => {
-        let new_replacement = e.target.value;
-        let libz_index = parseInt(e.target.getAttribute("libz-index"));
-        let tmpLibzValues = [...libzValues];
-        tmpLibzValues[libz_index] = new_replacement;
-        //setLibzValues(tmpLibzValues);
-        setLibzValues(tmpLibzValues);
+        let new_value = e.target.value;
+        let key = e.target.getAttribute("libz-key");
+        // update map values
+        //https://stackoverflow.com/questions/54152741/react-idiomatic-way-to-update-map-object-in-state
+        const next_libz = new Map(libz);
+        next_libz.set(key, new_value);
         let txt = (' ' + textBackup).slice(1); // create a copy of string
-        var libzCounter = 0;
-        let libzArray = txt.match(/{{[^({})]*}}/g);
-        console.log(libzArray);
-        if(libzArray){
-            libzArray.forEach(current_libz => {
-                let val = tmpLibzValues[libzIndex[libzCounter]];
-                 txt = val === "" || val === undefined ? txt : convert(txt, val, current_libz);
-                libzCounter++;
-            });
-        }
+        for(const [key, val] of next_libz){
+                 txt = !val ? txt : convert(txt, val, `{{${key}}}`);
+            }
         setText(txt);
+        setLibz(next_libz);
     }
 
-    let libzElements = libz.map((libzName, index) => {
-            return mode === "template" ? 
-            <Form.Group as={Row} key={index} >
-                <Col>
-                <Form.Control type="text" placeholder={libzName} 
-                    libz-index={index}
-                    value={libzName}
-                    onChange={handleLibzNameChange}
-                />
-                </Col>
-            </Form.Group> :
-                <InputGroup className="mb-3" key={index}>
+    let libzElements = [];
+    let index = 0;
+    for (const [key, val] of libz){
+            if( mode === "template" )
+            libzElements.push(
+                <Form.Group as={Row} key={index++} >
+                    <Col>
+                        <Form.Control type="text" placeholder={key} 
+                            libz-key={key}
+                            value={key}
+                            onChange={handleLibzNameChange}
+                        />
+                    </Col>
+                </Form.Group>); 
+             else
+                libzElements.push(
+                    <InputGroup className="mb-3" key={index++}>
                     <InputGroup.Prepend>
-                    <InputGroup.Text>{libzName}</InputGroup.Text>
+                    <InputGroup.Text>{key}</InputGroup.Text>
                     </InputGroup.Prepend>
-                    <Form.Control type="text" placeholder={libzName + " value"}
-                        libz-index={index}
-                        value={libzValues[index] ? libzValues[index] : ""}
+                    <Form.Control type="text" placeholder={key + " value"}
+                        libz-key={key}
+                        value={!val ? "" : val}
                         onChange={handleLibzValueChange}
                     />
                 </InputGroup>
-                ;
-        });
+                );
+        }
 
     return (
         <div id="libz-editor">

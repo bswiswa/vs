@@ -46,10 +46,10 @@ export default class TemplateList extends Component
     deleteTemplate(id) {
         axios.delete("http://localhost:3001/template/" + id).then((response) => {
             console.log("deleted", response.data);
-        });
-
-        this.setState({
-            templates: this.state.records.filter((el) => el._id !== id)
+            
+            this.setState({
+              templates: this.state.records.filter((el) => el._id !== id)
+          });
         });
     }
     // map out the templates on a table

@@ -1,4 +1,5 @@
 const express = require("express");
+const ObjectId = require("mongodb").ObjectId;
 
 // templateRoutes is an instance of the express router
 // it will define the template routes
@@ -34,7 +35,7 @@ templateRoutes.route("/template/add").post(function(req, res){
 // update a template by id
 templateRoutes.route("/template/update/:id").post(function(req, res){
     let db_connect = dbo.getDb("vs");
-    let q = { id: req.body.id };
+    let q = { _id: new ObjectId(req.params.id) };
     let newvalues = { $set: { name: req.body.name, text: req.body.text }, };
     db_connect
         .collection("templates")
@@ -45,11 +46,10 @@ templateRoutes.route("/template/update/:id").post(function(req, res){
         });
 });
 
-// update a template by id
+// find a template by id
 templateRoutes.route("/template/:id").get(function(req, res){
     let db_connect = dbo.getDb("vs");
-    let q = { id: req.body.id };
-    console.log(req.body);
+    let q = { _id: new ObjectId(req.params.id) };
     db_connect
         .collection("templates")
         .findOne(q, function(err, result){
@@ -62,7 +62,7 @@ templateRoutes.route("/template/:id").get(function(req, res){
 // delete a template
 templateRoutes.route("/template/:id").delete(function(req, res) {
     let db_connect = dbo.getDb("vs");
-    var q = { id: req.body.id };
+    var q = { _id: new ObjectId(req.params.id) };
     db_connect
         .collection("templates")
         .deleteOne(q, function(err, obj){

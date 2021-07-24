@@ -52,10 +52,8 @@ class Create extends Component {
   }
 
   handleTextUpdate(txt) {
-    if (txt.length > 0){
       this.setText(txt);
       this.setLibz(this.getLibz(txt));
-    }
   }
 
     handleSave(e) {

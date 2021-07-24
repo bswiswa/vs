@@ -3,16 +3,19 @@ import {Button, Row} from "react-bootstrap";
 import html2pdf from "html-to-pdf-js";
 import MarkdownView from "react-showdown";
 import convert from "../util/convert";
+import colorPicker from "../util/colorPicker";
 
 const Draft = ({ text, mode, handleSave }) => {
     const highlightLibz = (txt) => {
         let libzArray = txt.match(/{{[^({})]*}}/g);
-                  if(libzArray){
-                      libzArray.forEach(current_libz => {
-                          let val = "**" + current_libz + "**";
-                          txt = val === "" || val === undefined ? txt : convert(txt, val, current_libz);
-                      });
-                  }
+        if(libzArray){
+
+            libzArray.forEach(current_libz => {
+                // format the appearance of the libz
+                let val = `<span style='background-color: ${colorPicker(current_libz.length)}; border-radius: 5px; padding: 2px; font-weight: bold;'>` + current_libz.substring(2, current_libz.length - 2) + "</span>";
+                txt = val === "" || val === undefined ? txt : convert(txt, val, current_libz);
+            });
+        }
         return txt;
     }
     let txt = highlightLibz((' ' + text).slice(1));
