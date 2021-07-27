@@ -4,6 +4,7 @@
     height: 20em;
     overflow: scroll;
     padding: 5px;
+    border-radius: 5px;
 }
 
 @media print {

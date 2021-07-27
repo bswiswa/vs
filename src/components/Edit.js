@@ -4,8 +4,8 @@ import { withRouter } from "react-router";
 import Editor from "./Editor";
 import Draft from "./Draft";
 import LibzEditor from "./LibzEditor";
-import { Container, Col, Row, Button, Navbar } from "react-bootstrap";
-import convert from "../util/convert";
+import ActionBar from "./ActionBar";
+import { Container, Col, Row } from "react-bootstrap";
 
 class Edit extends Component {
 
@@ -47,7 +47,7 @@ class Edit extends Component {
       .get("http://localhost:3001/template/" + this.props.match.params.id)
       .then((response) => {
         this.setState({
-          doc_name: response.data.name,
+          doc_name: response.data.doc_name,
           text: response.data.text,
         });
         this.setLibz(this.getLibz(response.data.text));
@@ -102,7 +102,7 @@ class Edit extends Component {
         {
             axios
             .post("http://localhost:3001/template/add", {doc_name, text})
-            .then((res) =>  { alert("template saved"); console.log(res.data); });
+            .then((res) =>  { alert(`${doc_name} saved`); console.log(res.data); });
         }
       } 
 
@@ -112,36 +112,18 @@ class Edit extends Component {
     let  { mode, text, libz, textBackup, doc_name } = this.state;
       return (
       <Container>
-          <Navbar>
-            <Navbar.Collapse className="justify-content-end">
-              <Button 
-                variant={mode === "template" ? "outline-primary": "outline-success"} id="change-mode"
-                onClick={() => {
-                  if(mode === "template") {
-                    // backup the text
-                    this.setTextBackup(text);
-                    this.setMode("contract");
-
-                    // substitute in libz values
-                    let txt = (' ' + text).slice(1); // https://stackoverflow.com/questions/31712808/how-to-force-javascript-to-deep-copy-a-string
-                    if(libz.size > 0){
-                        for (const [key, val] of libz) {
-                            txt = !val ? txt : convert(txt, val, `{{${key}}}`);
-                        }
-                    }
-                    this.setText(txt);
-                  }
-                  else {
-                    // return to the text that we previously had before substituting in the libz
-                    this.setText(textBackup);
-                    this.setMode("template");
-                  } 
-                }}
-              >
-                {mode === "template" ? "Switch to Contract Mode" : "Switch to Template Mode"}
-              </Button>
-        </Navbar.Collapse>
-      </Navbar>
+        <ActionBar 
+          mode={mode} 
+          text={text} 
+          libz={libz} 
+          textBackup={textBackup}
+          setText={this.setText}
+          setTextBackup={this.setTextBackup}
+          setMode={this.setMode}
+          doc_name={doc_name}
+          handleDocNameChange={this.handleDocNameChange}
+          handleSave={this.handleSave}
+        />
         <div className="mt-1">
           <Row>
             <Col>

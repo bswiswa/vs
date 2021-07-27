@@ -2,6 +2,7 @@
     border: dotted 1px black;
     height: 20em;
     overflow: scroll;
+    border-radius: 5px;
 }
 
 #libz-editor > h5 {
