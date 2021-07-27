@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { Container, Col} from "react-bootstrap";
 
 const Template = ({ template, deleteTemplate }) => {
     return (
@@ -68,18 +69,22 @@ export default class TemplateList extends Component
     // display the table of templates
     render() {
         return (
-            <div>
-            <h5>Saved Templates</h5>
-            <table className="table table-striped table-sm" variant="light" style={{ marginTop: 20 }}>
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>{this.templateList()}</tbody>
-            </table>
-          </div>
+            <Container>
+              <Col>
+                <h5 className="mt-2 mb-0 pb-0">Saved Templates</h5>
+                  <table className="table table-hover table-sm" variant="light" style={{ marginTop: 20 }}>
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>{this.templateList()}</tbody>
+                  </table>
+              </Col>
+              <Col>
+              </Col>
+          </Container>
         );
     }
 } 
