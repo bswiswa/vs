@@ -62,12 +62,15 @@ class Edit extends Component {
 
   // get a map of all libz
   getLibz(txt) {
+    let libz = this.state.libz;
     let all_libz = txt.match(/{{[^({})]*}}/g);
     let libz_set = new Set(all_libz);
-    let result = new Map();  
+    let result = new Map(libz);  
     for (const lib of libz_set){
       // get val from {{val}}
-      result.set(lib.substring(2,lib.length - 2), '');
+      var key = lib.substring(2,lib.length - 2);
+      if(!libz.has(key))
+        result.set(key, '');
     }
     return result;
   }
