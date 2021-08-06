@@ -1,7 +1,8 @@
 import React from "react";
-import html2pdf from "html-to-pdf-js";
+import jsPDF from "jspdf";
 import { Button, FormControl, Col, Row} from "react-bootstrap";
 import convert from "../util/convert";
+
 
 const ActionBar = (props) => {
     let { text, libz, textBackup, mode, setMode, setTextBackup, setText, doc_name, handleDocNameChange, handleSave } = props;
@@ -27,29 +28,36 @@ const ActionBar = (props) => {
     };
 
     const downloadPdf = () => {
-        // cycle through the elements and selectively add the page break class
-        var parent = document.querySelector("div#draft > div");
-        var height = 0, pageHeight = 1500;
-        parent.querySelectorAll("*").forEach(el => {
-            var sum = height + el.offsetHeight;
-            if (sum > pageHeight){
-                el.classList.add("new-page");
-                height = el.offsetHeight;
+        const doc = new jsPDF();
+        // at a font size of 12 we can have 30 lines with 90 char each
+        doc.setFontSize(12);
+        // replace the italicized quotes with regular quotes
+        var words = text.replaceAll(/\n/g, '\n ').replaceAll('“', '"').replaceAll('”', '"').split(" ");
+        var page_line_count = 0, line_character_count = 0, str = "", i = 0;
+        if(words.length > 0)
+        {
+            while(i < words.length){
+                str = "";
+                while((i < words.length) && (line_character_count + words[i].length < 90)){
+                    line_character_count += (words[i].length + 1)
+                    str += (str.length > 0 ? (" " + words[i]) : words[i]); // if start of line add no space
+                    if(words[i].indexOf('\n') !== -1){
+                        str = str.trimEnd();
+                        i++;
+                        break;
+                    }
+                    i++;
+                }
+                if (page_line_count > 0 && page_line_count % 30 === 0){
+                    doc.addPage();
+                    page_line_count = 0;
+                }
+                doc.text(str, 10, (page_line_count%30)*10 + 10);
+                page_line_count++;
+                line_character_count = 0;
             }
-            else {
-                height = sum;
-            }
-            console.log("temp height = " + height);
-        });
-        var opt = {
-            margin:       0.3,
-            filename:     'contract.pdf',
-            html2canvas:  { scale: 2 },
-            jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' },
-            pagebreak:    { mode: 'css', before: '.new-page'}
-          };
-        html2pdf().set(opt).from(parent).save();
-        console.log("final height = " + height);
+            doc.save(`${doc_name} Contract.pdf`);
+        }
     }
 
     return (
