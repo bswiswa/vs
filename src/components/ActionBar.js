@@ -5,7 +5,8 @@ import convert from "../util/convert";
 
 
 const ActionBar = (props) => {
-    let { text, libz, textBackup, mode, setMode, setTextBackup, setText, doc_name, handleDocNameChange, handleSave } = props;
+    let { text, libz, textBackup, mode, doc_name } = props;
+    let { setMode, setTextBackup, setText, handleDocNameChange, handleSave } = props;
     const handleModeSwitch = () => {
         if(mode === "template") {
             // backup the text
