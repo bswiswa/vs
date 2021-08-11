@@ -65,7 +65,6 @@ const LibzEditor = ({libz, setLibz, mode, text, setText, textBackup }) => {
 
     return (
         <div id="libz-editor">
-            {libz.length > 0 ? <h5>Libz Editor</h5> : null}
             <ul id="libz-list">
                 {libzElements}
             </ul>
