@@ -6,6 +6,28 @@ Application that improves the contractual agreement process by:
 - enabling legal consuls on all sides to view contracts
 - keeping a historical record of such agreements
 
+## Development Roadmap/User stories
+
+| User Story  | Priority | Story Points (Time in weeks) |
+| ------------- | ------------- | ------------- |
+| As an admin user I would like to be able to sign up (no invite)  | 1  | 4 |
+| As an admin user I would like to invite other users to sign up  | 1  | 2 |
+| As an admin user I would like to assign roles to other users - my attorney, contractor  | 2  | 1 |
+| As an admin user I would like to create templates from scratch  | 1  | 2 |
+| As an admin user I would like to create contracts on the go from the templates  | 1  | 2 |
+| As an admin user I would like to print the contracts on the go into PDFs  | 1  | 2 |
+| As an admin user I would like to save contract PDFs in the system  | 2  | 3 |
+| As an admin user I would like to associate a contract with an individual contractor  | 2  | 1 |
+| As an admin user I would like to associate a contract with an individual attorney  | 2  | 1 |
+| As a contractor I would like to see all my contracts  | 1  | 1 |
+| As a contractor I would like to filter between pending and signed contracts | 2  | 2 |
+| As a contractor I would like to assign an attorney to a contract | 2  | 1 |
+| As a contractor I would like to digitally sign a contract - status becomes 'Contractor Signed'  | 1  | 5 |
+| As an attorney, I would like to see all contracts assigned to me  | 2  | 1 |
+| As a developer I would like to deploy and test the production build  | 1  | 2 |
+
+Total time = 30 weeks
+
 ## Available Scripts
 
 In the project directory, you can run:
@@ -15,36 +37,3 @@ In the project directory, you can run:
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
